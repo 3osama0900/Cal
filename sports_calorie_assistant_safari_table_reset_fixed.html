@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>مساعدي الرياضي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif, Arial, Helvetica;
+        }
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            border: 2px solid #3d9970;
+        }
+        h1 {
+            text-align: center;
+            color: #3d9970;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            -webkit-appearance: none;
+        }
+        button {
+            background-color: #3d9970;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2e7a5b;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .result-table th, .result-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .result-table th {
+            background-color: #3d9970;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مساعدي الرياضي</h1>
+        <label for="gender">الجنس</label>
+        <select id="gender">
+            <option value="male">ذكر</option>
+            <option value="female">أنثى</option>
+        </select>
+
+        <label for="age">العمر (بالسنوات)</label>
+        <input type="number" id="age" placeholder="أدخل عمرك">
+
+        <label for="weight">الوزن (بالكيلوجرام)</label>
+        <input type="number" id="weight" placeholder="أدخل وزنك">
+
+        <label for="height">الطول (بالسنتيمتر)</label>
+        <input type="number" id="height" placeholder="أدخل طولك">
+
+        <label for="activity">مستوى النشاط</label>
+        <select id="activity">
+            <option value="1.2">قليل النشاط</option>
+            <option value="1.375">نشاط خفيف</option>
+            <option value="1.55">نشاط متوسط</option>
+            <option value="1.725">نشاط عالي</option>
+            <option value="1.9">نشاط شديد</option>
+        </select>
+
+        <label for="workoutDays">عدد أيام التمرين أسبوعيًا</label>
+        <select id="workoutDays">
+            <option value="0">0 يوم</option>
+            <option value="1">1 يوم</option>
+            <option value="2">2 يوم</option>
+            <option value="3">3 أيام</option>
+            <option value="4">4 أيام</option>
+            <option value="5">5 أيام</option>
+            <option value="6">6 أيام</option>
+            <option value="7">7 أيام</option>
+        </select>
+
+        <label for="goal">الهدف</label>
+        <select id="goal">
+            <option value="maintain">الحفاظ على الوزن</option>
+            <option value="lose">خسارة الوزن</option>
+            <option value="gain">زيادة الوزن</option>
+        </select>
+
+        <button id="calculateBtn">احسب السعرات</button>
+        <button id="resetBtn">إعادة تعيين</button>
+
+        <div class="result" id="result"></div>
+
+        <table class="result-table" id="resultTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>القيمة</th>
+                    <th>العنصر</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="calories"></td>
+                    <td>السعرات الحرارية اليومية</td>
+                </tr>
+                <tr>
+                    <td id="protein"></td>
+                    <td>البروتين (جم)</td>
+                </tr>
+                <tr>
+                    <td id="carbs"></td>
+                    <td>الكربوهيدرات (جم)</td>
+                </tr>
+                <tr>
+                    <td id="fats"></td>
+                    <td>الدهون (جم)</td>
+                </tr>
+                <tr>
+                    <td id="bmi"></td>
+                    <td>مؤشر كتلة الجسم (BMI)</td>
+                </tr>
+                <tr>
+                    <td id="water"></td>
+                    <td>احتياج الماء اليومي (لتر)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('calculateBtn').addEventListener('click', calculateCalories);
+        document.getElementById('resetBtn').addEventListener('click', resetFields);
+
+        function calculateCalories() {
+            const gender = document.getElementById('gender').value;
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const height = parseFloat(document.getElementById('height').value) || 0;
+            const activity = parseFloat(document.getElementById('activity').value) || 1.2;
+            const goal = document.getElementById('goal').value;
+            const workoutDays = parseInt(document.getElementById('workoutDays').value) || 0;
+
+            if (age <= 0 || weight <= 0 || height <= 0) {
+                alert("برجاء إدخال جميع البيانات بشكل صحيح.");
+                document.getElementById('resultTable').style.display = "none";
+                return;
+            }
+
+            const adjustedActivity = activity + (workoutDays * 0.1);
+
+            let bmr = gender === "male" ? 
+                      (10 * weight + 6.25 * height - 5 * age + 5) : 
+                      (10 * weight + 6.25 * height - 5 * age - 161);
+            let calories = bmr * adjustedActivity;
+
+            if (goal === "lose") calories -= 500;
+            else if (goal === "gain") calories += 500;
+
+            const protein = (calories * 0.3) / 4;
+            const carbs = (calories * 0.5) / 4;
+            const fats = (calories * 0.2) / 9;
+            const bmi = (weight / ((height / 100) ** 2)).toFixed(2);
+            const water = (weight * 0.033).toFixed(2);
+
+            document.getElementById('calories').textContent = `${calories.toFixed(2)} سعر حراري`;
+            document.getElementById('protein').textContent = `${protein.toFixed(2)} جم`;
+            document.getElementById('carbs').textContent = `${carbs.toFixed(2)} جم`;
+            document.getElementById('fats').textContent = `${fats.toFixed(2)} جم`;
+            document.getElementById('bmi').textContent = `${bmi}`;
+            document.getElementById('water').textContent = `${water} لتر`;
+
+            document.getElementById('resultTable').style.display = "table";
+        }
+
+        function resetFields() {
+            document.getElementById('gender').value = "male";
+            document.getElementById('age').value = "";
+            document.getElementById('weight').value = "";
+            document.getElementById('height').value = "";
+            document.getElementById('activity').value = "1.2";
+            document.getElementById('goal').value = "maintain";
+            document.getElementById('workoutDays').value = "0";
+            document.getElementById('result').textContent = "";
+            document.getElementById('resultTable').style.display = "none";
+        }
+    </script>
+</body>
+</html>
